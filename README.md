@@ -47,7 +47,7 @@ Run the application:
 Navigate to the frontend directory and install the dependencies:
 
 ```bash
-cd frontend
+cd note-app
 npm install
 ```
 
