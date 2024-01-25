@@ -41,7 +41,7 @@ public class NoteService {
         String content = noteRequest.getContent();
         if (noteRequest.getIsEncrypted()) {
             try {
-                content = EncryptionUtils.encrypt(content, noteRequest.getPassword());
+                content = EncryptionUtils.encrypt(content, noteRequest.getPassword(), email);
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
@@ -63,7 +63,7 @@ public class NoteService {
         String content = noteRequest.getContent();
         if (noteRequest.getIsEncrypted()) {
             try {
-                content = EncryptionUtils.encrypt(content, noteRequest.getPassword());
+                content = EncryptionUtils.encrypt(content, noteRequest.getPassword(), email);
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
@@ -97,13 +97,13 @@ public class NoteService {
         return noteRepository.findByIsPublicTrue();
     }
 
-    public String decryptNoteContent(Long id, String password) {
+    public String decryptNoteContent(Long id, String password, String email) {
         Note note = getNoteById(id);
         if (!note.getIsEncrypted()) {
             throw new RuntimeException("Note is not encrypted");
         }
         try {
-            return EncryptionUtils.decrypt(note.getContent(), password);
+            return EncryptionUtils.decrypt(note.getContent(), password, email);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

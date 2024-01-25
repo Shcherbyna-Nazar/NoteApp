@@ -1,39 +1,42 @@
+version: '3.8'
 services:
-  postgres:
-    container_name: postgres
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "3000:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+      - ./mycert.crt:/etc/nginx/conf.d/mycert.crt
+      - ./mykey.key:/etc/nginx/conf.d/mykey.key
+    depends_on:
+      - frontend
+
+  frontend:
+    image: noteapp  # Replace with your React app's Docker image name
+    environment:
+      - REACT_APP_BACKEND_URL=https://backend:8080
+
+  backend:
+    image: spring-backend  # Replace with your Spring app's Docker image name
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/notedb  # Update database name and credentials
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=V3jaL9ia
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+    depends_on:
+      - db
+
+  db:
     image: postgres
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: jwt_security
-      PGDATA: /data/postgres
+      - POSTGRES_DB=notedb       # Your database name
+      - POSTGRES_USER=postgres       # Your database user
+      - POSTGRES_PASSWORD=V3jaL9ia  # Your database password
     volumes:
-      - postgres:/data/postgres
-    ports:
-      - "5432:5432"
-    networks:
-      - postgres
-    restart: unless-stopped
-
-  pgadmin:
-    container_name: pgadmin
-    image: dpage/pgadmin4
-    environment:
-      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-pgadmin4@pgadmin.org}
-      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-admin}
-      PGADMIN_CONFIG_SERVER_MODE: 'False'
-    volumes:
-      - pgadmin:/var/lib/pgadmin
-    ports:
-      - "5050:80"
-    networks:
-      - postgres
-    restart: unless-stopped
-
-networks:
-  postgres:
-    driver: bridge
+      - postgres_data:/var/lib/postgresql/data  # Persists data even if the container stops
 
 volumes:
-  postgres:
-  pgadmin:
+  postgres_data:  # Defines a volume for the PostgreSQL data

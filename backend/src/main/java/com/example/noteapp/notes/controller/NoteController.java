@@ -65,7 +65,8 @@ public class NoteController {
     }
 
     @GetMapping("/decrypt/{id}")
-    public ResponseEntity<String> decryptNoteContent(@PathVariable Long id, @RequestParam String password) {
-        return ResponseEntity.ok(noteService.decryptNoteContent(id, password));
+    public ResponseEntity<String> decryptNoteContent(@PathVariable Long id, @RequestParam String password, Principal principal) {
+        String email = principal.getName();
+        return ResponseEntity.ok(noteService.decryptNoteContent(id, password, email));
     }
 }

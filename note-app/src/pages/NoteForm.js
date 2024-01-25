@@ -7,15 +7,14 @@ import DOMPurify from 'dompurify';
 
 const NoteForm = ({ onSave, initialNote }) => {
     const [note, setNote] = useState({ ...initialNote, isEncrypted: false, password: '' });
-    const contentRef = useRef(note.content);
 
     const handleChange = (event) => {
         setNote({ ...note, [event.target.name]: event.target.value });
     };
 
-    const handleContentChange = useCallback((content) => {
-        contentRef.current = content;
-    }, []);
+    const handleContentChange = (content) => {
+        setNote({ ...note, content });
+    };
 
     const handleEncryptionChange = (event) => {
         setNote({ ...note, isEncrypted: event.target.checked });
@@ -23,7 +22,7 @@ const NoteForm = ({ onSave, initialNote }) => {
 
     const handleSubmit = (event) => {
         event.preventDefault();
-        const sanitizedContent = DOMPurify.sanitize(contentRef.current);
+        const sanitizedContent = DOMPurify.sanitize(note.content);
         onSave({ ...note, content: sanitizedContent });
     };
 

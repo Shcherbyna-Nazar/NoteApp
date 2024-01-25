@@ -20,7 +20,6 @@ const Login = () => {
             });
 
             if (response.data.mfaEnabled) {
-                console.log(response.data.secretImageUri);
                 navigate('/totp', {state: {qrCodeUri: response.data.secretImageUri, email: email}});
             } else {
                 navigate('/');
